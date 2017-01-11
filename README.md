@@ -23,7 +23,7 @@ client.get('gopher://gopher.floodgap.com/0/gopher/relevance.txt', (err, reply)=>
 # API
 
 ### Class: Client([{timeout: 5000, parseDir: true}])
-If timeout is set fale, no timeout is used.<br>
+If timeout is set false, no timeout is used.<br>
 If parseDir is set false, the directory in the result will be a buffer with the raw text from the server instead of being an Array of GopherResource.
 
 ```javascript
