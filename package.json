@@ -15,5 +15,9 @@
     "retro"
   ],
   "author": "DusteD",
-  "license": "WTFPL"
+  "license": "WTFPL",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/DusteDdk/gopher-lib.git"
+  }
 }
