@@ -2,8 +2,8 @@
 var net = require('net');
 var fs = require('fs');
 
-const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
-const supportedTypes = '0145679hIg';
+const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t|M)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
+const supportedTypes = '0145679hIgM';
 
 class GopherResource {
 	constructor( host, port, selector, type, name, query, itemNum ) {
@@ -35,8 +35,14 @@ class GopherResource {
 			throw new Error('Not a valid GopherResource: '+JSON.stringify(this));
 		}
 	}
+
+	toShortURI() {
+		return encodeURI('gopher://'+this.host+':'+this.port+'/'+this.type+this.selector+( (this.query!==false)?'?'+this.query:'' ) );
+	}
+
 	toURI() {
-		return encodeURI('gopher://'+this.host+':'+this.port+'/'+this.type+this.selector+( (this.query!==false)?'?'+this.query:'' )+( (this.name)?'#'+this.name:'' ));
+		return this.toShortURI()+( (this.name)?'#'+encodeURIComponent(this.name):'' );
+
 	}
 
 	toDirectoryEntity() {
@@ -88,7 +94,7 @@ class GopherClient {
 			socket.write(res.selector);
 			//Send a query?
 			if(res.query!==false) {
-				socket.write('\t'+query);
+				socket.write('\t'+res.query);
 			}
 			//End line
 			socket.write('\r\n');
@@ -140,7 +146,7 @@ class GopherClient {
 				} else {
 					dir=[];
 					var itemNum=0;
-					var arr = data.split('\r\n');
+					var arr = data.replace(/\r\n/g,'\n').split('\n');
 					for( var idx=0; idx < arr.length; ++idx) {
 						var l=arr[idx];
 						if(l.length===0) {
@@ -171,7 +177,7 @@ class GopherClient {
 						}
 					}
 				}
-			} else if(!fileName && (res.type==='0' || res.type==='h' || res.type==='4' || res.type === '6')) {
+			} else if(!fileName && (res.type==='0' || res.type==='h' || res.type==='4' || res.type === '6' || res.type === 'M')) {
 				txt=data.toString();
 			} else if(!fileName && (res.type==='5' || res.type==='9' || res.type==='g' ||res.type==='I')) {
 				buffer=data;
@@ -203,7 +209,8 @@ const GopherTypes = {
 	tn3270: 'T',
 	gif: 'g',
 	image: 'I',
-	html: 'h'
+	html: 'h',
+	mail: 'M'
 };
 
 module.exports = {

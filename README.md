@@ -69,6 +69,7 @@ var resourcec = new Gopher.Resource( 'floodgap.com' );
 ```
 ##### Method: Resource.toJson()
 ##### Method: Resource.toURI()
+##### Method: Resource.toShortURI()
 ##### Method: Resource.toDirectoryEntity()
 
 ```javascript
@@ -79,6 +80,9 @@ console.log(res.toJson());
 
 console.log(res.toURI());
 //gopher://dusted.dk:70/0/pages/about/this_server.txt#About%20my%20Server
+
+console.log(res.toShortURI());
+//gopher://dusted.dk:70/0/pages/about/this_server.txt
 
 console.log(res.toDirectoryEntity());
 //0About my Server    /pages/about/this_server.txt    dusted.dk       70
