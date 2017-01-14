@@ -7,6 +7,20 @@ const GopherServer = require('./server');
 const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t|M)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
 const supportedTypes = '0145679hIgM';
 
+class GopherMap { 
+	constructor() {
+		this.map={};
+	}
+
+	addDir( path ) {
+		var dir = {
+			path: path,
+			resources: resources
+		};
+		this.map.push(dir);
+	}
+}
+
 class GopherResource {
 	constructor( host, port, selector, type, name, query, itemNum ) {
 		if(host && !port) {
@@ -219,6 +233,7 @@ const GopherTypes = {
 module.exports = {
 	Client: GopherClient,
 	Server: GopherServer,
+	Map: GopherMap,
 	Resource: GopherResource,
 	Type: GopherTypes
 };
