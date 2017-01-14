@@ -1,6 +1,8 @@
 'use strict';
-var net = require('net');
-var fs = require('fs');
+const net = require('net');
+const fs = require('fs');
+
+const GopherServer = require('./server');
 
 const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t|M)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
 const supportedTypes = '0145679hIgM';
@@ -210,11 +212,13 @@ const GopherTypes = {
 	gif: 'g',
 	image: 'I',
 	html: 'h',
-	mail: 'M'
+	mail: 'M',
+	info: 'i'
 };
 
 module.exports = {
 	Client: GopherClient,
+	Server: GopherServer,
 	Resource: GopherResource,
 	Type: GopherTypes
 };
