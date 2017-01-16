@@ -1,6 +1,7 @@
 'use strict';
-var net = require('net');
-var fs = require('fs');
+const net = require('net');
+const fs = require('fs');
+const path = require('path');
 
 const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t|M)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
 const supportedTypes = '0145679hIgM';
@@ -33,6 +34,9 @@ class GopherResource {
 		}
 		if( !this.host || !this.port || !this.type || typeof this.selector !== 'string' ) {
 			throw new Error('Not a valid GopherResource: '+JSON.stringify(this));
+		}
+		if(selector && selector.length>1) {
+			this.selector = path.normalize(this.selector);
 		}
 	}
 
@@ -90,14 +94,16 @@ class GopherClient {
 		}
 		requestInfo.start = new Date();
 		var socket = net.createConnection( {port: res.port, host: res.host}, ()=>{
-			//Send the selector
-			socket.write(res.selector);
-			//Send a query?
+			//Add the selector
+			var request=res.selector;
+			//Add a query?
 			if(res.query!==false) {
-				socket.write('\t'+res.query);
+				request +='\t'+res.query;
 			}
 			//End line
-			socket.write('\r\n');
+			request+='\r\n';
+
+			socket.write(request);
 			requestInfo.remoteAddress=socket.remoteAddress;
 		});
 		var data=[];
