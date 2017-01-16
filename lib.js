@@ -1,6 +1,7 @@
 'use strict';
 const net = require('net');
 const fs = require('fs');
+const path = require('path');
 
 const GopherServer = require('./server');
 
@@ -50,6 +51,7 @@ class GopherResource {
 		if( !this.host || !this.port || !this.type || typeof this.selector !== 'string' ) {
 			throw new Error('Not a valid GopherResource: '+JSON.stringify(this));
 		}
+		this.selector=path.normalize(this.selector);
 	}
 
 	toShortURI() {
@@ -106,14 +108,16 @@ class GopherClient {
 		}
 		requestInfo.start = new Date();
 		var socket = net.createConnection( {port: res.port, host: res.host}, ()=>{
-			//Send the selector
-			socket.write(res.selector);
-			//Send a query?
+			//Add the selector
+			var request=res.selector;
+			//Add a query?
 			if(res.query!==false) {
-				socket.write('\t'+res.query);
+				request +='\t'+res.query;
 			}
 			//End line
-			socket.write('\r\n');
+			request+='\r\n';
+
+			socket.write(request);
 			requestInfo.remoteAddress=socket.remoteAddress;
 		});
 		var data=[];
