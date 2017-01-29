@@ -57,6 +57,7 @@ class GopherResource {
 }
 
 const GopherType = {
+	info: 'i',
 	text: '0',
 	directory: '1',
 	phonebook: '2',
