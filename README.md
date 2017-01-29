@@ -88,11 +88,11 @@ console.log(res.toDirectoryEntity());
 //0About my Server    /pages/about/this_server.txt    dusted.dk       70
 ```
 
-### File: client-example.js
+### File: example-client.js
 ```bash
 # A simple command-line client for interacting with gopher servers and downloading files.
-node example.js gopher://dusted.dk/
-node example.js gopher://dusted.dk/9/pages/goatlove/LD28_GoatLove_linux_b0021.tar.bz2 goatlove.tar.bz2
+node example-client.js gopher://dusted.dk/
+node example-client.js gopher://dusted.dk/9/pages/goatlove/LD28_GoatLove_linux_b0021.tar.bz2 goatlove.tar.bz2
 ```
 
 ### File: test.js
