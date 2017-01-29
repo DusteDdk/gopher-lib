@@ -1,58 +1,54 @@
+/*jslint node: true */
+/*jshint esversion: 6 */
+
 const Server = require('./server');
 const Common = require('./common');
-const Type = Common.Type;
+const Resource = Common.Resource;
+
 
 const server = new Server(7000, 'localhost');
 
-server.listen(7000);
+server.listen(() => {
+    console.log('Server ready');
+});
 
-const menu = [
-    ['i', 'This is a test server',' ', 'h',1],
-    ['1', 'DusteD.dk', '/', 'dusted.dk', 70],
-    ['1', 'Submenu', '/sub', 'localhost', 7000],
-];
-
-server.addMenu('',menu);
-
-
-// TODO: This is not how it work yet.
-// The idea is, that if host/port is left out,
-// The ones used in the constructor will be inserted where relevant.
-// If an entry has "file" then that file will be served.
-// If an entry has "scan" then an index will be scanned from that.
-
-const nicerMenu = [
-    {
-        type: Type.info,
-        name: 'A test server indeed'
-    },
-    {
-        type: Type.directory,
-        name: 'Local path',
-        path: '/something'
-    },
-    {
-        url: 'gopher://gopher.floodgap.com/0/gopher/relevance.txt#Why is gopher still relevant today'
-    },
-    {
-        type: Type.text,
-        name: 'Why is gopher still relevant today',
-        host: 'gopher.floodgap.com',
-        path: '/gopher/relevance.txt',
-        port: 70
-    },
-    {
-        type: Type.text,
-        name: 'Server source',
-        path: '/server.js', /* This is optional, if left out, it is the hash of the filename */ 
-        file: __dirname + 'server.js'
-    },
-    {
-        type: Type.directory,
-        name: 'Something dynamic',
-        path: '/stuffs',
-        scan: '/somewhere/over/the/rainbow'
+const preLog = (req, rep)=>{
+    console.log('Incoming connection (' + req.serial + ') from ' + rep.socket.remoteAddress + ' requesting: "' + req.selector + '"');
+    if(!req.handler) {
+        console.log('NOTE: No handler found for selector, default error-message is sent to client.');
     }
-];
+};
 
-server.addMenu('/sub',nicerMenu);
+const postLog = (req, rep)=>{
+    console.log('Ended connection (' + req.serial + ') bytes sent: ' + rep.socket.bytesWritten);
+};
+
+const myHandler = (request, rep)=>{
+    var remoteAddress = rep.socket.remoteAddress;
+    var now = new Date();
+
+    rep.menuItem( {name: 'Why hello there '+remoteAddress, type:'i'});
+    rep.menuItem( {name: 'Lovely that you dropped by '+now, type:'i'});
+    if(request.query) {
+        rep.menuItem( {name: 'You wanted to search "'+request.query+'".', type:'i'});
+    }
+    rep.menuItem( {name: 'Back to index', type:'1'});
+
+    rep.end();
+};
+
+server.addPreHandler(preLog);
+server.addPostHandler(postLog);
+
+server.addMenu('')
+    .addEntry({name: '+--------------------------+', type:'i'})
+    .addEntry({name: '| A gopher-server in node! |', type:'i'})
+    .addEntry({name: '+--------------------------+', type:'i'})
+    .addEntry({name: ' ', type:'i'})
+    .addEntry({name: 'Dynamically generated menu!', type: '1', selector:'/userHandler'})
+    .addEntry({name: 'Send query', type: '7', selector:'/userHandler'})
+    .addEntry({name: 'Directory Index', type: '1', selector:'/dirIndex'})
+    .addEntry({name: 'External Site', type: '1', host: 'dusted.dk', port: 70});
+
+server.addHandler('/userHandler', myHandler);
+server.addDir('/dirIndex', './');

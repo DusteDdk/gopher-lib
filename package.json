@@ -1,6 +1,6 @@
 {
   "name": "gopher-lib",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Client, server and utility library for the Gopher Internet protocol.",
   "main": "lib.js",
   "scripts": {
@@ -16,8 +16,12 @@
   ],
   "author": "DusteD",
   "license": "WTFPL",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/DusteDdk/gopher-lib.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DusteDdk/gopher-lib.git"
+  },
+  "devDependencies": {
+    "jsdoc": "3.4.3",
+    "jshint": "2.9.4"
   }
 }

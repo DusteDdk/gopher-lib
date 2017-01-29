@@ -1,11 +1,25 @@
+/*jslint node: true */
+/*jshint esversion: 6 */
+
 'use strict';
 
 const path = require('path');
 
 const GopherURIPattern='^(gopher:\\/\\/)?(.+?(?=:|\\/|$))(:\\d+?(?=$|\\/))?(\\/(\\d|g|I|h|t|M)?)?([^#]+?(?=\\?|$|#))?(\\?.+?(?=$|#))?(#.+)?';
 
+/** @class */
 class GopherResource {
-	constructor( host, port, selector, type, name, query, itemNum ) {
+
+	/**
+	 * @param {string} host|url - Hostname or url, if url, do not provide other arguments
+	 * @param {string} port - Port for the entry
+	 * @param {string} selector - Selector for the entry
+	 * @param {string} type - The type of entry (for example 'i')
+	 * @param {string} name - The name to show to the user in a gopher-map
+	 * @param {string} query - Search string to send to server (not expressed in gopher-map)
+	 * @description Describes a gopher-resource (a menu-item)
+	 */
+	constructor( host, port, selector, type, name, query ) {
 		if(host && !port) {
 			var regEx = new RegExp(GopherURIPattern);
 			var matches = regEx.exec(decodeURI(host));
@@ -26,7 +40,6 @@ class GopherResource {
 			this.selector=selector;
 			this.name=name;
 			this.query=(query)?query:false;
-			this.itemNum;
 		} else {
 			throw new Error('Invalid arguments to constructor.');
 		}
@@ -47,6 +60,10 @@ class GopherResource {
 
 	}
 
+	/**
+	 * @method
+	 * @description Return a goper-map formatted string representation of this resource
+	 */
 	toDirectoryEntity() {
 		return this.type+this.name+'\t'+this.selector+'\t'+this.host+'\t'+this.port+'\r\n';
 	}
@@ -55,6 +72,28 @@ class GopherResource {
 		return JSON.stringify(this);
 	}
 }
+
+/**
+ * @method
+ * @memberof GopherResource
+ * @param {string} txt - Message for this info-item
+ * @description Create a new GopherResource with info text, suitable for menus
+ * @returns {GopherResource}
+ */
+GopherResource.info = (txt)=>{
+	return new GopherResource('i', 1, '-', 'i', txt)
+};
+
+/**
+ * @method
+ * @memberof GopherResource
+ * @param {string} txt - Message for this error-item
+ * @description Create a new GopherResource with error text, suitable for menus
+ * @returns {GopherResource}
+ */
+GopherResource.error = (txt)=>{
+	return new GopherResource('e', 1, '-', '3', txt)
+};
 
 const GopherType = {
 	info: 'i',

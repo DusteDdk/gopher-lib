@@ -111,7 +111,6 @@ class GopherClient {
 						switch(l[0]) {
 							case 'i':
 							case '3':
-					//		dir.push( { type: l[0], txt: l.substring(1).replace(/\t.+$/,'') });
 							dir.push( new GopherResource( '-', '1', '', l[0], l.substring(1).replace(/\t.+$/,'') ) );  
 							break;
 							default:
